@@ -45,17 +45,7 @@ def brightPoints(image):
     return points
 
 
-def normalize2(img):
-    
-    """
-    normalisation function with an added part to resize image to 257 grey values
-    """
-    
-    min_pixel = np.amin(img)
-    max_pixel = np.amax(img)
-    norm_img = img - min_pixel * 1 / (max_pixel - min_pixel)
-    norm2 = norm_img/(max_pixel/257)
-    return norm2
+
 
 
 def circle_convolution(image, radius, kernelsize):

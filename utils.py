@@ -171,4 +171,32 @@ def skeleton(image):
     return skeleton
 
 
+def fit_line_slope(points):
+    """
+    Calculates slope for a line fitted trough 4 points
+    
+    """
 
+    x0=points[0][0]
+    y0=points[0][1]
+    x1=points[1][0]
+    y1=points[1][1]
+    
+    #calculate x and y difference. To avoid division by zero add epsilon in x difference is zero
+    y_diff=(y1-y0)
+    
+    x_diff=(x1-x0)
+    if x_diff==0:
+        x_diff=x_diff+sys.float_info.epsilon
+    
+    #calculate slope, if slope is zero add epsilon
+    m = (y_diff)/(x_diff)
+    return m
+
+def find_insertion_angle(center, last_electrode, other_electrode):
+    m1 = fit_line_slope((center, last_electrode))
+    m2 = fit_line_slope((center, other_electrode))
+    
+    tan_angle= (m1-m2)/(1+(m1*m2))
+    angle= np.degrees(np.arctan(tan_angle))
+    

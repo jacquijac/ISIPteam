@@ -36,21 +36,7 @@ from utils import
 post = plt.imread("DATA/ID55/ID55post.png")
 pre = plt.imread("DATA/ID55/ID55pre.png")
 
-def crop_image(img):
-    '''
-    Crops image to remove text in top left/right corner.
-    '''
-    crop_img = img[50:img.shape[0], 0:img.shape[1]]
-    return crop_img
 
-def normalize(img):
-    '''
-    Normalize image so all pixel values are between 0 and 1.
-    '''
-    min_pixel = np.amin(img)
-    max_pixel = np.amax(img)
-    norm_img = (img - min_pixel) * (1 / (max_pixel - min_pixel))
-    return norm_img
 
 #crop and normalize pre and post images
 pre_crop = crop_image(pre)

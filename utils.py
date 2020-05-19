@@ -6,12 +6,22 @@ Created on Tue May 19 08:58:50 2020
 """
 
 from scipy import signal
-from skimage import io, feature
+from skimage import io, feature, color, filters
 import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 
 from skimage import draw
+
+from scipy.ndimage.morphology import binary_erosion, binary_dilation, binary_fill_holes
+from scipy.ndimage.morphology import morphological_gradient, distance_transform_edt
+from skimage import morphology as morph
+
+
+
+
+
+
 
 def crop_image(img):
     '''
@@ -152,3 +162,20 @@ def thresholding(image, thres):
     """
     binary_img=np.where(image>thres, 200, 0)
     return binary_img
+
+def skeleton(image):
+    im = color.rgb2gray(image)
+    thres = filters.threshold_otsu(im) 
+    im - (im > thres).astype(np.uint8)
+    binary = im>thres
+    eroded = binary_erosion(im, structure=np.ones((2,2)), iterations = 20) [20:,20:]
+    eroded = 1- eroded
+    dilated = binary_dilation(eroded, structure=np.ones((11,11)))
+    boundary = np.clip(dilated.astype(np.int)-eroded.astype(np.int), 0, 1)
+    dt = distance_transform_edt(np.logical_not(boundary))
+    edges = 1-morphological_gradient(im, size =3)
+    skeleton=morph.skeletonize(binary)
+    return skeleton
+
+
+

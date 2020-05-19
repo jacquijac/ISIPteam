@@ -61,16 +61,21 @@ plt.imshow(pre_crop)
 
 
 
-#localize electrodes
+#localize electrodes: maybe skeleton function
 
 
 
 #ennumerate electrodes
+#always 12 electrodes, always equally spaced
+#if output as list can be used to loop over all electrodes
 
 
 
 
 #calculate insertion angle
+for i in electrodes:
+  angle= (find_insertion_angle(center, i, i+1))
+  #add output to excel part
 
 
 

@@ -194,6 +194,9 @@ def fit_line_slope(points):
     return m
 
 def find_insertion_angle(center, last_electrode, other_electrode):
+    """
+    to calculate insertion angle when center and two electrodes are given
+    """
     m1 = fit_line_slope((center, last_electrode))
     m2 = fit_line_slope((center, other_electrode))
     

@@ -9,7 +9,8 @@ from skimage import draw
 from scipy.ndimage.morphology import binary_erosion, binary_dilation, binary_fill_holes
 from scipy.ndimage.morphology import morphological_gradient, distance_transform_edt
 from skimage import morphology as morph
-
+import scipy.fftpack as fp
+import numpy.fft
 
 
 
@@ -202,4 +203,40 @@ def find_insertion_angle(center, last_electrode, other_electrode):
     
     tan_angle= (m1-m2)/(1+(m1*m2))
     angle= np.degrees(np.arctan(tan_angle))
+
     
+ def signaltonoise(a, axis=0, ddof=0):
+    a = np.asanyarray(a)
+    m = a.mean(axis)
+    sd = a.std(axis=axis, ddof=ddof)
+    return np.where(sd == 0, 0, m/sd)
+
+
+def hpass(image_grey, l):
+    '''Application of the High Pass Filter on the grayscale
+image, with selected frequency cut-off values.'''
+    im = np.array(image_grey)
+    freq = fp.fft2(im)
+    (w, h) = freq.shape
+    half_w, half_h = int(w/2), int(h/2)
+    freq1 = np.copy(freq)
+    freq2 = fp.fftshift(freq1)
+    freq2[half_w-l:half_w+l+1,half_h-l:half_h+l+1] = 0 # select all but the first lxl (low) frequencies
+    im1 = np.clip(fp.ifft2(fp.ifftshift(freq2)).real,0,255) # clip pixel values after IFFT
+    
+    return im1
+
+def lowpass(image_grey, u):
+    '''Application of the Low Pass Filter on the grayscale
+image, with selected frequency cut-off values.'''
+    im = np.array(image_grey)
+    freq = fp.fft2(im)
+    (w, h) = freq.shape
+    half_w, half_h = int(w/2), int(h/2)
+    freq1 = np.copy(freq)
+    freq2 = fp.fftshift(freq1)
+    freq2_low = np.copy(freq2)
+    freq2_low[half_w-u:half_w+u+1,half_h-u:half_h+u+1] = 0
+    freq2 -= freq2_low # select only the first 20x20 (low) frequencies
+    im1 = fp.ifft2(fp.ifftshift(freq2)).real
+    return im1

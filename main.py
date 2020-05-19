@@ -8,7 +8,7 @@ from skimage import feature, color, filters
 from scipy import ndimage
 from PIL import Image
 import cv2
-from utils import
+import utils
 
 #maybe add loop?
 
@@ -41,16 +41,16 @@ pre = plt.imread("DATA/ID55/ID55pre.png")
 
 
 #crop and normalize pre and post images
-pre_crop = crop_image(pre)
-post_crop = crop_image(post)
-post_norm = normalize(post_crop)
+pre_crop = utils.crop_image(pre)
+post_crop = utils.crop_image(post)
+post_norm = utils.normalize(post_crop)
 
 
 
 #find spiral center
-mask = create_mask(post_norm)
-comp_img = find_components(mask)
-xmean, ymean = find_center(comp_img)
+mask = utils.create_mask(post_norm)
+comp_img = utils.find_components(mask)
+xmean, ymean = utils.find_center(comp_img)
 
 #plot pre image with red dot at spiral center
 plt.plot(xmean, ymean, 'r.', markersize=14)

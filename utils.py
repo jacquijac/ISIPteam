@@ -1,9 +1,17 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May 19 08:58:50 2020
+
+@author: Jacqui
+"""
+
 from scipy import signal
 from skimage import io, feature
 import matplotlib.pyplot as plt
-import cv2 as cv
+import cv2
 import numpy as np
 
+from skimage import draw
 
 def crop_image(img):
     '''
@@ -26,17 +34,17 @@ def normalize(img):
 
 #It doesn't work perfectly yet, each picture has slightly different brightness parameters.
 def brightPoints(image):
-    img = cv.imread(image) 
-    hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV) 
-    h, s, v = cv.split(hsv) 
+    img = cv2.imread(image) 
+    hsv = cv2.cvtColor(img, cv.COLOR_BGR2HSV) 
+    h, s, v = cv2.split(hsv) 
     limit = v.max () 
 
     hsv_min = np.array((0, 0, 180), np.uint8) 
     hsv_max = np.array((225, 225, limit), np.uint8)
 
-    img1 = cv.inRange(hsv, hsv_min, hsv_max) 
+    img1 = cv2.inRange(hsv, hsv_min, hsv_max) 
 
-    moments = cv.moments(img1, 1) 
+    moments = cv2.moments(img1, 1) 
 
     x_moment = moments['m01']
     y_moment = moments['m00']
@@ -46,7 +54,7 @@ def brightPoints(image):
     x = int(x_moment / area) 
     y = int(y_moment / area) 
     
-    points = cv.imwrite("points.jpg" , img1)
+    points = cv2.imwrite("points.jpg" , img1)
     
     return points
 
@@ -134,7 +142,7 @@ def circle_convolution(image, radius, kernelsize):
     rr, cc = draw.circle(kernelsize/2, kernelsize/2, radius=radius, shape=arr.shape)
     arr[rr, cc] = 1000
     
-    conv = signal.convolve2d(img_after, arr, mode='same')
+    conv = signal.convolve2d(image, arr, mode='same')
     return conv
 
 
@@ -142,5 +150,5 @@ def thresholding(image, thres):
     """
     function for thresholding
     """
-    binary_img=np.where(norm_electrode>thres, 200, 0)
+    binary_img=np.where(image>thres, 200, 0)
     return binary_img

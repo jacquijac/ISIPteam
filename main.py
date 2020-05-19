@@ -10,6 +10,8 @@ from PIL import Image
 import cv2
 from utils import
 
+#maybe add loop?
+
 # import pre and post images
 #post = plt.imread("DATA/ID03/ID03post.png")
 #pre = plt.imread("DATA/ID03/ID03pre.png")
@@ -45,7 +47,7 @@ post_norm = normalize(post_crop)
 
 
 
-
+#find spiral center
 mask = create_mask(post_norm)
 comp_img = find_components(mask)
 xmean, ymean = find_center(comp_img)
@@ -54,11 +56,8 @@ xmean, ymean = find_center(comp_img)
 plt.plot(xmean, ymean, 'r.', markersize=14)
 plt.imshow(pre_crop)
 
-#import images - maybe loop throught
 
 
-
-#define spiral center
 
 
 

@@ -209,7 +209,7 @@ def find_insertion_angle(center, last_electrode, other_electrode):
 def hpass(image_gray, l):
     '''Application of the High Pass Filter on the grayscale
 image, with selected frequency cut-off values.'''
-    im = np.array(image_grey)
+    im = np.array(image_gray)
     freq = fp.fft2(im)
     (w, h) = freq.shape
     half_w, half_h = int(w/2), int(h/2)
@@ -223,7 +223,7 @@ image, with selected frequency cut-off values.'''
 def lowpass(image_gray, u):
     '''Application of the Low Pass Filter on the grayscale
 image, with selected frequency cut-off values.'''
-    im = np.array(image_grey)
+    im = np.array(image_gray)
     freq = fp.fft2(im)
     (w, h) = freq.shape
     half_w, half_h = int(w/2), int(h/2)

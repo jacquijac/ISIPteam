@@ -162,12 +162,6 @@ def skeleton(image):
     thres = filters.threshold_otsu(im) 
     im - (im > thres).astype(np.uint8)
     binary = im>thres
-    eroded = binary_erosion(im, structure=np.ones((2,2)), iterations = 20) [20:,20:]
-    eroded = 1- eroded
-    dilated = binary_dilation(eroded, structure=np.ones((11,11)))
-    boundary = np.clip(dilated.astype(np.int)-eroded.astype(np.int), 0, 1)
-    dt = distance_transform_edt(np.logical_not(boundary))
-    edges = 1-morphological_gradient(im, size =3)
     skeleton=morph.skeletonize(binary)
     return skeleton
 

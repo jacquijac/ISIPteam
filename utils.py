@@ -236,20 +236,27 @@ image, with selected frequency cut-off values.'''
     return im1
 
 def find_electrodes(template, image):
+    image=image.astype(np.float32)
     _, w, h = template.shape[::-1]
     electrodes_loc=[]
-    for i in range(0,12):
-        match_img=np.copy(image)
-        #match_img[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]]=255
+    template=color.rgb2grey(template)
+    match_img=np.copy(image)
+    match_img=color.rgb2grey(match_img)
+    print(match_img.dtype)
 
+    for i in range(0,12):
         match= cv2.matchTemplate(match_img, template, cv2.TM_SQDIFF_NORMED )
         min_val, max_val, min_loc, max_loc=cv2.minMaxLoc(match)
-        electrodes_loc += [min_loc]
-        
+        x= min_loc[0]+(w/2)
+        y= min_loc[1]+(h/2)
+        electrodes_loc += [(x,y)]
         
         #only for visualisation
         top_left = min_loc
         bottom_right = (top_left[0] + w, top_left[1] + h)
         cv2.rectangle(image,top_left, bottom_right, 255, 2)
+        cv2.circle(match_img, (int(x), int(y)),  20, (255,0,0), -1)
+       
+
 
     return electrodes_loc, image

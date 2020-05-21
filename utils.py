@@ -236,7 +236,7 @@ image, with selected frequency cut-off values.'''
     return im1
 
 def find_electrodes(template, image):
-    image=image.astype(np.float32)
+
     _, w, h = template.shape[::-1]
     electrodes_loc=[]
     template=color.rgb2grey(template)

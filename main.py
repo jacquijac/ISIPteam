@@ -61,8 +61,12 @@ plt.imshow(pre_crop)
 
 
 
-#localize electrodes: maybe skeleton function
+#localize electrodes:
+template = plt.imread("./DATA/ID55/ID55post.png")
+template=(template[370:450, 250:330])
 
+plt.imshow(find_electrodes(template, post_norm)[1])
+plt.show
 
 
 #ennumerate electrodes

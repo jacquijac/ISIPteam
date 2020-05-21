@@ -234,3 +234,22 @@ image, with selected frequency cut-off values.'''
     freq2 -= freq2_low # select only the first 20x20 (low) frequencies
     im1 = fp.ifft2(fp.ifftshift(freq2)).real
     return im1
+
+def find_electrodes(template, image):
+    _, w, h = template.shape[::-1]
+    electrodes_loc=[]
+    for i in range(0,12):
+        match_img=np.copy(image)
+        #match_img[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]]=255
+
+        match= cv2.matchTemplate(match_img, template, cv2.TM_SQDIFF_NORMED )
+        min_val, max_val, min_loc, max_loc=cv2.minMaxLoc(match)
+        electrodes_loc += [min_loc]
+        
+        
+        #only for visualisation
+        top_left = min_loc
+        bottom_right = (top_left[0] + w, top_left[1] + h)
+        cv2.rectangle(image,top_left, bottom_right, 255, 2)
+
+    return electrodes_loc, image

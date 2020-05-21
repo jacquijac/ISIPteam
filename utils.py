@@ -242,7 +242,6 @@ def find_electrodes(template, image):
     template=color.rgb2grey(template)
     match_img=np.copy(image)
     match_img=color.rgb2grey(match_img)
-    print(match_img.dtype)
 
     for i in range(0,12):
         match= cv2.matchTemplate(match_img, template, cv2.TM_SQDIFF_NORMED )
@@ -256,7 +255,5 @@ def find_electrodes(template, image):
         bottom_right = (top_left[0] + w, top_left[1] + h)
         cv2.rectangle(image,top_left, bottom_right, 255, 2)
         cv2.circle(match_img, (int(x), int(y)),  20, (255,0,0), -1)
-       
-
 
     return electrodes_loc, image

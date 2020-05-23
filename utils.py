@@ -12,7 +12,12 @@ from skimage import morphology as morph
 import scipy.fftpack as fp
 import numpy.fft
 
-
+from imageio import imread
+from matplotlib import pyplot as plt
+from skimage.io import imread
+import morphsnakes as ms
+import scipy
+from scipy import ndimage
 
 
 
@@ -257,3 +262,59 @@ def find_electrodes(template, image):
         cv2.circle(match_img, (int(x), int(y)),  20, (255,0,0), -1)
 
     return electrodes_loc, image
+
+
+def gray_im(image):
+    if (len(img.shape) == 3):
+        image=rgb2gray(img)
+    else:
+        image=img
+    return image
+
+def rgb2gray(img):
+    return 0.2989 * img[..., 0] + 0.587 * img[..., 1] + 0.114 * img[..., 2]
+
+
+def visual_callback_2d(background, fig=None):
+    """
+    Returns a callback than can be passed as the argument `iter_callback`
+    of `morphological_chan_vese` for visualizing the evolution
+    of the levelsets. Only works for 2D images.
+    """
+    
+    # Prepare the visual environment.
+    if fig is None:
+        fig = plt.figure()
+    fig.clf()
+    ax1 = fig.add_subplot(1, 2, 1)
+    ax1.imshow(background, cmap=plt.cm.gray)
+
+    ax_u = ax1.imshow(np.zeros_like(background), vmin=0, vmax=1)
+    plt.pause(0.001)
+
+    def callback(levelset):
+        
+        if ax1.collections:
+            del ax1.collections[0]
+        #ax1.contour(levelset, [0.5], colors='b')
+        ax_u.set_data(levelset)
+        fig.canvas.draw()
+        plt.pause(0.001)
+        
+
+    return callback
+
+def sharpShape(image, calback):
+  
+    # Callback for visual plotting
+    callback = visual_callback_2d(image)
+
+    # Morphological Chan-Vese 
+    ima=ms.morphological_chan_vese(image, 35,
+                               smoothing=3, lambda1=1, lambda2=1,
+                               iter_callback=callback)
+
+    return ima
+
+
+

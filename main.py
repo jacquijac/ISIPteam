@@ -45,6 +45,15 @@ pre_crop = utils.crop_image(pre)
 post_crop = utils.crop_image(post)
 post_norm = utils.normalize(post_crop)
 
+image = gray_im(img)
+call=visual_callback_2d(image)
+binar = sharpShape(image, call)
+#binar_float = np.uint8(binar)
+#slicecanny = cv2.Canny(binar_float,0,1)
+#plt.imshow(binar)
+#distance_map = ndimage.distance_transform_edt(1- binar)
+#plt.imshow(distance_map)
+
 
 
 #find spiral center

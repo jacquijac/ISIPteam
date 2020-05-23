@@ -15,7 +15,7 @@ import numpy.fft
 from imageio import imread
 from matplotlib import pyplot as plt
 from skimage.io import imread
-import morphsnakes as ms
+import morphsnakes as ms #pip install morphsnakes
 import scipy
 from scipy import ndimage
 

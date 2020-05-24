@@ -283,7 +283,7 @@ def find_electrodes(template, image):
     return electrodes_loc, image
 
 
-def gray_im(image):
+def gray_im(img):
     if (len(img.shape) == 3):
         image=rgb2gray(img)
     else:

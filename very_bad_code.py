@@ -109,10 +109,9 @@ def gray_im(img):
 
 def center(img):
     bin2gray = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
-    ret2,th2 = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-    th2 = 255-th2
+    _,th = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     
-    point = cv2.HoughCircles(th2,cv2.HOUGH_GRADIENT,1,800,
+    point = cv2.HoughCircles(th,cv2.HOUGH_GRADIENT,1,800,
                             param1=100,param2=15,minRadius=50,maxRadius=150)
     point = np.uint16(np.around(point))
     for i in point[0,:]:
@@ -120,7 +119,6 @@ def center(img):
         cv2.circle(bin2gray,(i[0],i[1]),2,(255,0,0),5)
     plt.imshow(bin2gray)
     return point
-    #plt.imshow(bin2gray)
 
 
 

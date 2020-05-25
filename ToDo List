@@ -1,0 +1,29 @@
+To Do List project
+
+- Import all files and store (array, datamatrix, list?) for further computation:  
+  STATUS: only single files import
+  TODO: import with for loop into a storage
+
+- Image normalisation:
+  STATUS: croping and normalisation working
+  TODO: -
+
+- Spiral center detection - 
+  STATUS: two possible implementations, results good, not perfect (i am totally ok with good)
+  TODO: for perfect results another method, maybe not main focus at the moment, choosing with which one we want to go
+
+- Electrode detection  
+  STATUS: one implementation, detects most electrodes but often one or two are outside the spiral
+  TODO: for perfect results maybe mask, maybe not main focus right now?
+  
+- Electrode ennumeration:
+   STATUS:
+   TODO:
+   
+- Angle calculation:
+  STATUS: working function when input of two points given
+  TODO: test with real input
+  
+- Output results
+  STATUS: no function yet
+  TODO: implement function with angles and number of electrodes as input. Output should be file with list.

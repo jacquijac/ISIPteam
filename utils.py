@@ -259,7 +259,7 @@ image, with selected frequency cut-off values.'''
     im1 = fp.ifft2(fp.ifftshift(freq2)).real
     return im1
 
-def find_electrodes(template, image):
+def find_electrodes1(template, image):
 
     _, w, h = template.shape[::-1]
     electrodes_loc=[]
@@ -279,6 +279,29 @@ def find_electrodes(template, image):
         bottom_right = (top_left[0] + w, top_left[1] + h)
         cv2.rectangle(image,top_left, bottom_right, 255, 2)
         cv2.circle(match_img, (int(x), int(y)),  20, (255,0,0), -1)
+
+    return electrodes_loc, image
+
+def find_electrodes(template, image):
+    _, w, h = template.shape[::-1]
+    electrodes_loc=[]
+    template=color.rgb2grey(template)
+    match_img=np.copy(image)
+    match_img=color.rgb2grey(match_img)
+
+    for i in range(0,12):
+        match= cv2.matchTemplate(match_img, template, cv2.TM_CCOEFF_NORMED)
+        min_val, max_val, min_loc, max_loc=cv2.minMaxLoc(match)
+       
+        x= max_loc[0]+(w/2)
+        y= max_loc[1]+(h/2)
+        electrodes_loc += [(x,y)]
+        
+        #only for visualisation
+        top_left = max_loc
+        bottom_right = (top_left[0] + w, top_left[1] + h)
+        cv2.rectangle(image,top_left, bottom_right, 255, 2)
+        cv2.circle(match_img, (int(x), int(y)),  20, (0,0,0), -1)
 
     return electrodes_loc, image
 

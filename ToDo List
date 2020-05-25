@@ -13,12 +13,12 @@ To Do List project
   TODO: for perfect results another method, maybe not main focus at the moment, choosing with which one we want to go
 
 - Electrode detection  
-  STATUS: one implementation, detects most electrodes but often one or two are outside the spiral
+  STATUS: tow implementations, detects most electrodes but often one or two are outside the spiral
   TODO: for perfect results maybe mask, maybe not main focus right now?
   
 - Electrode ennumeration:
-   STATUS:
-   TODO:
+   STATUS: no working function yet
+   TODO: take coordinate output of electrode function and numbered coordinates as output
    
 - Angle calculation:
   STATUS: working function when input of two points given

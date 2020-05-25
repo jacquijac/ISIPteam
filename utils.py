@@ -369,4 +369,65 @@ def sharpShape(image, calback):
     return ima
 
 
+def threshold(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    mean_pixel = np.mean(gray)
+    if mean_pixel < 0.1:
+        thresh = 0.155
+    elif mean_pixel > 0.1 and mean_pixel < 0.2:
+        thresh = 0.35
+    elif mean_pixel > 0.2 and mean_pixel < 0.285:
+        thresh = 0.5
+    elif mean_pixel > 0.285 and mean_pixel < 0.5:
+        thresh = 0.8
+    elif mean_pixel > 0.5:
+        thresh = 0.99
+    thresh_img = cv2.threshold(gray, thresh, 1, cv2.THRESH_BINARY)[1]
+    # perform a series of erosions and dilations to remove
+    # any small blobs of noise from the thresholded image
+    thresh_img = cv2.erode(thresh_img, None, iterations=6)
+    thresh_img = cv2.dilate(thresh_img, None, iterations=4)
+    
+    return thresh_img
+
+
+
+def find_electrodes2(image, thresh_img):
+    # perform a connected component analysis on the thresholded
+    # image, then initialize a mask to store only the relevant components
+    thresh_img = np.uint8(thresh_img)
+    labels = measure.label(thresh_img, neighbors=8, background=0)
+    mask = np.zeros(thresh_img.shape, dtype="uint8")
+    # loop over the unique components
+    for label in np.unique(labels):
+        # if this is the background label, ignore it
+        if label == 0:
+            continue
+        # otherwise, construct the label mask and count the
+        # number of pixels 
+        labelMask = np.zeros(thresh_img.shape, dtype="uint8")
+        labelMask[labels == label] = 255
+        numPixels = cv2.countNonZero(labelMask)
+        # if the number of pixels in the component is not too large, add it to mask
+        if numPixels < 4500:
+            mask = cv2.add(mask, labelMask)
+        
+    # find the contours in the mask, then sort them from left to
+    # right
+    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
+    # loop over the contours
+    for (i, c) in enumerate(cnts):
+        # draw the bright spot on the image
+        (x, y, w, h) = cv2.boundingRect(c)
+        ((cX, cY), radius) = cv2.minEnclosingCircle(c)
+        cv2.circle(image, (int(cX), int(cY)), int(radius), (0, 0, 255), 3)
+
+    
+    return image
+        
+
+
+
+
 

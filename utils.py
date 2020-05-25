@@ -283,16 +283,25 @@ def find_electrodes1(template, image):
     return electrodes_loc, image
 
 def find_electrodes(template, image):
+    """
+    finds the 12 points ressembling a electrode template the most and returns
+    coordinates as a list as well as an image with the electrodes visualized with a rectancle
+    """
     _, w, h = template.shape[::-1]
     electrodes_loc=[]
+    #change image color to 1D grey
     template=color.rgb2grey(template)
     match_img=np.copy(image)
     match_img=color.rgb2grey(match_img)
 
+    #iterate 12 times for 12 electrodes
     for i in range(0,12):
+        #match to template
         match= cv2.matchTemplate(match_img, template, cv2.TM_CCOEFF_NORMED)
+        #get min and max values and localisation
         min_val, max_val, min_loc, max_loc=cv2.minMaxLoc(match)
        
+        #impute center of template rectangle and therefore coordinates
         x= max_loc[0]+(w/2)
         y= max_loc[1]+(h/2)
         electrodes_loc += [(x,y)]
@@ -301,6 +310,7 @@ def find_electrodes(template, image):
         top_left = max_loc
         bottom_right = (top_left[0] + w, top_left[1] + h)
         cv2.rectangle(image,top_left, bottom_right, 255, 2)
+        #black out the already detected electrode
         cv2.circle(match_img, (int(x), int(y)),  20, (0,0,0), -1)
 
     return electrodes_loc, image

@@ -426,7 +426,42 @@ def find_electrodes2(image, thresh_img):
     
     return image
         
+def ennumerate(locs, center, output_img):
+    """
+    Parameters
+    ----------
+    locs : list of electrode coordinates
+    center : center of spiral, tuple of coordinates
+    output_img : image where to plot numbers on 
 
+    Returns
+    -------
+    sorted_loc : list of coordinates sorted by distance to center
+
+    """
+    #find distances between center and points
+    dist=[]
+    for i in loc:
+        new_dist=calculateDistance(center, i)
+        dist += [new_dist]
+    
+
+    #get a sorted list of points, according to distance from center
+    sorted_loc=[]
+    for i in range(12):
+        near = np.argmin(dist)    
+
+        sorted_loc += [loc[near]]
+        #set high to remove from argmin
+        dist[near]=10000
+
+    #enumerate electrodes output
+    for i in range(12):
+        cv2.putText(post_norm, str(i+1), (int(sorted_loc[i][0])+30, int(sorted_loc[i][1]+20)), cv2.FONT_HERSHEY_SIMPLEX, 2, (255),3)
+        
+    plt.imshow(output_img)
+    plt.show()
+    return sorted_loc
 
 
 

@@ -45,9 +45,9 @@ pre_crop = utils.crop_image(pre)
 post_crop = utils.crop_image(post)
 post_norm = utils.normalize(post_crop)
 
-image = gray_im(img)
-call=visual_callback_2d(image)
-binar = sharpShape(image, call)
+image = utils.gray_im(img)
+call= utils.visual_callback_2d(image)
+binar = utils.sharpShape(image, call)
 #binar_float = np.uint8(binar)
 #slicecanny = cv2.Canny(binar_float,0,1)
 #plt.imshow(binar)
@@ -76,7 +76,7 @@ template=(template[370:450, 250:330])
 
 loc_electrodes, electrodes_image = utils.find_electrodes(template,image)
 
-plt.imshow(find_electrodes(template, post_norm)[1])
+plt.imshow(utils.find_electrodes(template, post_norm)[1])
 plt.show
 
 
@@ -89,7 +89,7 @@ enum_electrodes= utils.ennummerate(loc_electrodes)
 
 #calculate insertion angle
 for i in enum_electrodes:
-  angle= (find_insertion_angle(center, i, i+1))
+  angle= (utils.find_insertion_angle(center, i, i+1))
   #add output to excel part
 
 

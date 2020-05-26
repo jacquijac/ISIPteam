@@ -83,7 +83,7 @@ plt.show
 #ennumerate electrodes
 #always 12 electrodes, always equally spaced
 #if output as list can be used to loop over all electrodes
-enum_electrodes= utils.ennummerate(loc_electrodes)
+enum_electrodes= utils.ennumerate(loc_electrodes)
 
 
 

@@ -74,7 +74,7 @@ plt.imshow(pre_crop)
 template = plt.imread("./DATA/ID55/ID55post.png")
 template=(template[370:450, 250:330])
 
-utils.find_electrodes(template,image)
+loc_electrodes, electrodes_image = utils.find_electrodes(template,image)
 
 plt.imshow(find_electrodes(template, post_norm)[1])
 plt.show
@@ -83,12 +83,12 @@ plt.show
 #ennumerate electrodes
 #always 12 electrodes, always equally spaced
 #if output as list can be used to loop over all electrodes
-
+enum_electrodes= utils.ennummerate(loc_electrodes)
 
 
 
 #calculate insertion angle
-for i in electrodes:
+for i in enum_electrodes:
   angle= (find_insertion_angle(center, i, i+1))
   #add output to excel part
 

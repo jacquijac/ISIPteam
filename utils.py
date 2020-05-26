@@ -425,7 +425,11 @@ def find_electrodes2(image, thresh_img):
 
     
     return image
-        
+
+def calculateDistance(point1, point2):
+    dist = np.sqrt((point1[1] - point2[1])**2 + (point1[0] - point2[0])**2)
+    return dist
+    
 def ennumerate(loc, center, output_img):
     """
     Parameters

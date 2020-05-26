@@ -461,7 +461,7 @@ def ennumerate(loc, center, output_img):
 
     #enumerate electrodes output
     for i in range(12):
-        cv2.putText(post_norm, str(i+1), (int(sorted_loc[i][0])+30, int(sorted_loc[i][1]+20)), cv2.FONT_HERSHEY_SIMPLEX, 2, (255),3)
+        cv2.putText(output_image, str(i+1), (int(sorted_loc[i][0])+30, int(sorted_loc[i][1]+20)), cv2.FONT_HERSHEY_SIMPLEX, 2, (255),3)
         
     plt.imshow(output_img)
     plt.show()

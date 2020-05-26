@@ -426,7 +426,7 @@ def find_electrodes2(image, thresh_img):
     
     return image
         
-def ennumerate(locs, center, output_img):
+def ennumerate(loc, center, output_img):
     """
     Parameters
     ----------

@@ -1,0 +1,25 @@
+#get median distance between points for mask
+median=(np.median(dist_between_points)) 
+
+#detect left or right facing spiral
+#check if point are in a distance close to median between points
+#maybe better with an assert statement
+end=-1
+before_end=-2
+est_dist=calculateDistance(sorted_loc[end], sorted_loc[before_end])
+print(est_dist)
+while est_dist < (median-50) or est_dist > (median+50):
+    print('not neighbours')
+    end+=-1
+    before_end+=-1
+    if end==-11:
+        break
+    est_dist=calculateDistance(sorted_loc[end], sorted_loc[before_end])
+print(est_dist, end, before_end)    
+
+#get left/right
+if sorted_loc[end][0]-sorted_loc[before_end][0] > 0:
+    spiral='right'
+else:
+    spiral = 'left'
+print(spiral)

@@ -221,6 +221,7 @@ def find_insertion_angle(center, last_electrode, other_electrode):
     
     tan_angle= (m1-m2)/(1+(m1*m2))
     angle= np.degrees(np.arctan(tan_angle))
+    return angle
 
     
  def signaltonoise(a, axis=0, ddof=0):

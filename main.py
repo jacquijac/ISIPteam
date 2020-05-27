@@ -87,11 +87,18 @@ plt.show
 enum_electrodes= utils.ennumerate(loc_electrodes, (xmean,ymean), post_norm)
 
 
+#assert last electrode
 
-#calculate insertion angle
-for i in enum_electrodes:
-  angle= (utils.find_insertion_angle(center, i, i+1))
-  #add output to excel part
+#find insertion angle
+last=len(enum_electrodes)
+ref = utils.find_insertion_angle(center, enum_electrodes[-1], enum_electrodes[-1])
+print(last, 'New angle: {:.2f}'.format(abs(ref)), 'Total insertion angle: {:.2f}'.format(ref))
+
+for i in range(len(enum_electrodes)-1):
+    angle= (utils.find_insertion_angle(center, enum_electrodes[-i], enum_electrodes[-i+1]))
+    ref+=abs(angle)
+    number=11-i
+    print(number, 'New angle: {:.2f}'.format(abs(angle)), 'Total insertion angle: {:.2f}'.format(ref))
 
 
 

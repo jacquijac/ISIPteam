@@ -74,10 +74,11 @@ plt.imshow(pre_crop)
 template = plt.imread("./DATA/ID55/ID55post.png")
 template=(template[370:450, 250:330])
 
-loc_electrodes, electrodes_image = utils.find_electrodes(template,image)
+loc_electrodes, electrodes_image = utils.find_electrodes(template,post_norm)
 
-plt.imshow(utils.find_electrodes(template, post_norm)[1])
+plt.imshow(electrodes_image)
 plt.show
+
 
 
 #ennumerate electrodes

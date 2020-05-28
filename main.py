@@ -124,5 +124,43 @@ for i in range(1,13):
   
 wb.save('ISIP_angles.xls')
 
+#### Loop to input files ####
+
+#create list of id numbers
+ids = ["03", "04", "05", "06", "07", "14", "15", "17", "18", "37", "38", "55"]
+#loop over all id numbers
+for i in ids:
+    #set pre and post images
+    pre = plt.imread('DATA/ID' + i + '/ID' + i + 'pre.png')
+    post = plt.imread('DATA/ID' + i + '/ID' + i + 'post.png')
+    #crop and normalize pre and post images
+    pre_crop = crop_image(pre)
+    post_crop = crop_image(post)
+    post_norm = normalize(post_crop)
+    #find spiral center
+    mask = utils.find_bright_points(post_norm)
+    comp_img = utils.find_components(mask)
+    x_center, y_center = utils.find_center(comp_img)
+    center = (x_center, y_center)
+    #plot pre image with red dot at spiral center
+    plt.plot(x_center, y_center, 'r.', markersize=14)
+    plt.imshow(pre_crop)
+    plt.show()
+    #localize electrodes 
+    elec_img, elec_coords = utils.find_electrodes(post_norm, mask)
+    #ennumerate electrodes 
+    enum_electrodes = utils.ennumerate_electrodes(elec_coords) 
+    ##depending on format of output of ennumerate function, add plot with electrodes labeled
+    ##
+    #find insertion angle
+    last=len(enum_electrodes)
+    ref = utils.find_insertion_angle(center, enum_electrodes[-1], enum_electrodes[-1])
+    print('For ID' + i + 'angles are:')
+    print(last, 'New angle: {:.2f}'.format(abs(ref)), 'Total insertion angle: {:.2f}'.format(ref))
+    for i in range(len(enum_electrodes)-1):
+        angle = (utils.find_insertion_angle(center, enum_electrodes[-i], enum_electrodes[-i+1]))
+        ref += abs(angle)
+        number = 11-i
+        print(number, 'New angle: {:.2f}'.format(abs(angle)), 'Total insertion angle: {:.2f}'.format(ref))
 
 

@@ -9,6 +9,8 @@ from scipy import ndimage
 from PIL import Image
 import cv2
 import utils
+import xlwt 
+from xlwt import Workbook 
 
 #maybe add loop?
 
@@ -104,6 +106,23 @@ for i in range(len(enum_electrodes)-1):
 
 #output
 
+  
+# Workbook is created 
+wb = Workbook() 
+  
+# add_sheet is used to create sheet. 
+sheet1 = wb.add_sheet('ISIP_output') 
+  
+sheet1.write(0, 0, 'Electrode i') 
+sheet1.write(0, 1, 'Angle theta') 
+
+for i in range(1,13):
+    sheet1.write(i, 0, i) 
+    sheet1.write(i, 1, output[i]) 
+
+
+  
+wb.save('ISIP_angles.xls')
 
 
 

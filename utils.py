@@ -517,3 +517,33 @@ def enumerate_electrodes(cnt_coords, center):
 
     return elec_coords
 
+
+def center_electrodes(xdat, ydat):  
+"""
+The function of determining the center based on the coordinates of the electrodes
+"""
+    dx = np.diff(xdat)
+    dy = np.diff(ydat)
+
+    dx_1=dx**2
+    dy_1=dy**2
+    sum_ar=dx_1+dy_1
+    sqr_arr=sum_ar**0.5
+
+    heading = np.unwrap(np.arctan2(dy,dx))
+    dphi = np.diff( heading )
+
+    nda_1=ndat-2
+
+    r = sqr_arr[0:nda_1]*np.tan(math.pi/2-dphi)
+
+    xc = xdat[0:nda_1] + r * np.cos( heading[0:nda_1] + math.pi/2)
+    yc = ydat[0:nda_1] + r * np.sin( heading[0:nda_1] + math.pi/2)
+
+    xc1 = np.mean( xc )
+    yc1 = np.mean( yc )
+    return xc1, yc1
+
+
+
+

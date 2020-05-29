@@ -469,5 +469,51 @@ def ennumerate(loc, center, output_img):
     return sorted_loc
 
 
+def dist_between_points(x1, y1, x2, y2):
+    dist = np.sqrt((x2-x1)**2 + (y2-y1)**2)
+    return dist
 
+def spiral_direction(cnt_coords):
+    cnt_x = [cnt_coords[i][0] for i in range(len(cnt_coords))]
+    cnt_y = [cnt_coords[i][1] for i in range(len(cnt_coords))]
+    mean_y = np.mean(cnt_y)
+    furthest_right = cnt_coords[np.argmax(cnt_x)]
+    if furthest_right[1] > mean_y:
+        spiral_dir = 'right'
+    else: 
+        spiral_dir = 'left'
+    return spiral_dir
+
+def enumerate_electrodes(cnt_coords, center):
+    #dist = dist_between_points(cnt_coords[0][0], cnt_coords[0][1], cnt_coords[1][0], cnt_coords[1][1])
+    cnt_x = [cnt_coords[i][0] for i in range(len(cnt_coords))]
+    cnt_y = [cnt_coords[i][1] for i in range(len(cnt_coords))]
+    mean_x = np.mean(cnt_x)
+    mean_y = np.mean(cnt_y)
+    furthest_right = cnt_coords[np.argmax(cnt_x)]
+    furthest_left = cnt_coords[np.argmin(cnt_x)]
+    spiral_dir = spiral_direction(cnt_coords)
+    dist_to_mean = []
+    distances = np.empty([len(cnt_coords), len(cnt_coords)])
+    elec_coords = []
+    for (x, y) in cnt_coords:
+        dist_to_mean.append(dist_between_points(mean_x, mean_y, x, y))
+    for i in range(len(cnt_coords)):
+        for j in range(len(cnt_coords)):
+            distances[i, j] = dist_between_points(cnt_coords[i][0], cnt_coords[i][1], cnt_coords[j][0], cnt_coords[j][1])
+    median_dist = np.median(distances)  
+    elec1 = dist_to_mean.index(min(dist_to_mean))
+    elec_coords.append(cnt_coords[elec1])
+    del cnt_coords[elec1]
+    r = dist_between_points(center[0], center[1], elec_coords[0][0], elec_coords[0][1])
+    for i in range(len(cnt_coords)):
+        next_elec_x = elec_coords[i][0] + r * np.sin(median_dist/r)
+        next_elec_y = elec_coords[i][1] - r * (1-np.cos(median_dist/r))
+        tree = spatial.KDTree(cnt_coords)
+        next_elec_index = tree.query((next_elec_x, next_elec_y))
+        next_elec_coord = cnt_coords[next_elec_index[1]]
+        elec_coords.append(next_elec_coord)
+        cnt_coords.remove(next_elec_coord)
+
+    return elec_coords
 

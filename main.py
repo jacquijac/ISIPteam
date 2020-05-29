@@ -75,7 +75,7 @@ for i in ids:
     elec_img, elec_coords = utils.find_electrodes2(post_norm, mask)
     
     #ennumerate electrodes 
-    enum_electrodes = utils.ennumerate_electrodes(elec_coords) 
+    enum_electrodes = utils.enumerate_electrodes(elec_coords, center) 
     ##depending on format of output of ennumerate function, add plot with electrodes labeled
     ##
     #find insertion angle

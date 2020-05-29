@@ -56,9 +56,9 @@ for i in ids:
     post = plt.imread('DATA/ID' + i + '/ID' + i + 'post.png')
     
     #crop out text of images and normalize pre and post images to homogenize color scale
-    pre_crop = crop_image(pre)
-    post_crop = crop_image(post)
-    post_norm = normalize(post_crop)
+    pre_crop = utils.crop_image(pre)
+    post_crop = utils.crop_image(post)
+    post_norm = utils.normalize(post_crop)
     
     #find spiral center
     mask = utils.find_bright_points(post_norm)
@@ -85,6 +85,7 @@ for i in ids:
     print('For ID' + i + 'angles are:')
     print(last, 'New angle: {:.2f}'.format(abs(ref)), 'Total insertion angle: {:.2f}'.format(ref))
     #add up angles for insertion depth
+    output={12:ref}
     for j in range(len(enum_electrodes)-1):
         angle = (utils.find_insertion_angle(center, enum_electrodes[-j], enum_electrodes[-j+1]))
         ref += abs(angle)

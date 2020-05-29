@@ -418,14 +418,15 @@ def find_electrodes2(image, thresh_img):
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     # loop over the contours
+    coordinates=[]
     for (i, c) in enumerate(cnts):
         # draw the bright spot on the image
         (x, y, w, h) = cv2.boundingRect(c)
         ((cX, cY), radius) = cv2.minEnclosingCircle(c)
         cv2.circle(image, (int(cX), int(cY)), int(radius), (0, 0, 255), 3)
-
-    
-    return image
+        coordinates += [(int(cX), int(cY))]
+   
+    return image, coordinates
 
 def calculateDistance(point1, point2):
     dist = np.sqrt((point1[1] - point2[1])**2 + (point1[0] - point2[0])**2)

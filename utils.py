@@ -41,48 +41,32 @@ def normalize(img):
 
 
 
-#It doesn't work perfectly yet, each picture has slightly different brightness parameters.
-def brightPoints(image):
-    img = cv2.imread(image) 
-    hsv = cv2.cvtColor(img, cv.COLOR_BGR2HSV) 
-    h, s, v = cv2.split(hsv) 
-    limit = v.max () 
-
-    hsv_min = np.array((0, 0, 180), np.uint8) 
-    hsv_max = np.array((225, 225, limit), np.uint8)
-
-    img1 = cv2.inRange(hsv, hsv_min, hsv_max) 
-
-    moments = cv2.moments(img1, 1) 
-
-    x_moment = moments['m01']
-    y_moment = moments['m00']
-
-    area = moments['m00']
-
-    x = int(x_moment / area) 
-    y = int(y_moment / area) 
-    
-    points = cv2.imwrite("points.jpg" , img1)
-    
-    return points
-
-
-def create_mask(img):
+def find_bright_points(image):
     '''
-    Create a mask for lightest parts of post image, which containes the electrodes. 
-    Mask is white for electrodes and black everywhere else.
+    Find brightest points in image. Function uses thresholding, based on the 
+    mean pixel of an image, to extract the brightest pixels. 
+    input: image 
+    output: mask image showing pixels between determined threshold and 1
     '''
-    #initialize mask with zeros
-    mask = np.zeros_like(img)
-    #find mean pixel value
-    mean_pixel = np.mean(img)
-    #set mask=1 where pixel vales are greater than mean*1.75
-    mask[np.where(np.logical_and(img>=mean_pixel*1.75,img<=1))] = 1
-    #convert mask so it can be used in later functions 
-    mask = np.uint8(mask)
-    mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-    return mask 
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    mean_pixel = np.mean(gray)
+    if mean_pixel < 0.1:
+        thresh = 0.155
+    elif mean_pixel > 0.1 and mean_pixel < 0.2:
+        thresh = 0.35
+    elif mean_pixel > 0.2 and mean_pixel < 0.285:
+        thresh = 0.5
+    elif mean_pixel > 0.285 and mean_pixel < 0.5:
+        thresh = 0.8
+    elif mean_pixel > 0.5:
+        thresh = 0.99
+    thresh_img = cv2.threshold(gray, thresh, 1, cv2.THRESH_BINARY)[1]
+    # perform a series of erosions and dilations to remove
+    # any small blobs of noise from the thresholded image
+    thresh_img = cv2.erode(thresh_img, None, iterations=6)
+    thresh_img = cv2.dilate(thresh_img, None, iterations=4)
+    
+    return thresh_img 
 
 def create_circular_mask(h, w, center=None, radius=None): 
 
@@ -370,26 +354,6 @@ def sharpShape(image, calback):
     return ima
 
 
-def threshold(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    mean_pixel = np.mean(gray)
-    if mean_pixel < 0.1:
-        thresh = 0.155
-    elif mean_pixel > 0.1 and mean_pixel < 0.2:
-        thresh = 0.35
-    elif mean_pixel > 0.2 and mean_pixel < 0.285:
-        thresh = 0.5
-    elif mean_pixel > 0.285 and mean_pixel < 0.5:
-        thresh = 0.8
-    elif mean_pixel > 0.5:
-        thresh = 0.99
-    thresh_img = cv2.threshold(gray, thresh, 1, cv2.THRESH_BINARY)[1]
-    # perform a series of erosions and dilations to remove
-    # any small blobs of noise from the thresholded image
-    thresh_img = cv2.erode(thresh_img, None, iterations=6)
-    thresh_img = cv2.dilate(thresh_img, None, iterations=4)
-    
-    return thresh_img
 
 
 

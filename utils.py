@@ -94,9 +94,12 @@ def find_components(mask):
     '''
     #create empty list to store number of components in each section
     num_comps = list()
-    #loop over mask, in increments of 50
-    for i in range(0, mask.shape[0], 50):
-        nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(mask[:,i:i+400], connectivity=8)
+    #create copy of mask so original doesn't get changed 
+    mask_img = mask.copy()
+    mask_img = np.uint8(mask_img)
+    #loop over columns of mask
+    for i in range(0, mask_img.shape[1]):
+        nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(mask_img[:,i:i+400], connectivity=8)
         #connectedComponentswithStats yields every seperated component with information on each of them, such as size
         #remove the background component
         sizes = stats[1:, -1]; nb_components = nb_components - 1
@@ -104,29 +107,30 @@ def find_components(mask):
 
     #find index of section with most components
     most_comps = num_comps.index(max(num_comps))
-    #index corresponds to (index*50)+400 on image
+    #index corresponds to index:index+400 on image
     #black out everything except that section 
-    mask[:, 0:most_comps*50] = 0
-    mask[:, (most_comps*50)+400:] = 0
+    mask_img[:, 0:most_comps] = 0
+    mask_img[:, (most_comps)+400:] = 0
 
 
     #now get stats for only this section  
-    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(mask_img, connectivity=8)
     sizes = stats[1:, -1]; nb_components = nb_components - 1
 
     #we only want to keep the smallest components since they tend to form a circle around the spiral center
     #take maximum size to be (4/3)*mean(size)
+    min_size = np.mean(sizes)*0.2
     max_size = np.mean(sizes)*1.33
 
     #initialize output image with zeros 
-    center = np.zeros((output.shape))
+    comp_img = np.zeros((output.shape))
     
     #for every component in the image, you keep it only if it's below max_size
     for i in range(0, nb_components):
-        if sizes[i] <= max_size:
-            center[output == i + 1] = 255
+        if sizes[i] <= max_size and sizes[i] >= min_size:
+            comp_img[output == i + 1] = 255
             
-    return center
+    return comp_img
 
 
 def find_center(comp_img):

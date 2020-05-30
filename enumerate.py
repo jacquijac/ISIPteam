@@ -5,7 +5,7 @@ def enumerate_electrodes(cnt_coords, center):
     mean_x = np.mean(cnt_x)
     mean_y = np.mean(cnt_y)
     bottom_right = cnt_coords[np.argmax([cnt_x[i]+cnt_y[i] for i in range(len(cnt_x))])]
-    bottom_left = cnt_coords[np.argmax([np.abs(cnt_x[i]+cnt_y[i]) for i in range(len(cent_x))])]
+    bottom_left = cnt_coords[np.argmax([np.abs(cnt_x[i]+cnt_y[i]) for i in range(len(cnt_x))])]
     spiral_dir = spiral_direction(cnt_coords)
     dist_to_mean = []
     distances = np.empty([len(cnt_coords), len(cnt_coords)])

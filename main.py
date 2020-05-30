@@ -78,32 +78,68 @@ for i in ids:
     enum_electrodes = utils.enumerate_electrodes(elec_coords, center) 
     ##depending on format of output of ennumerate function, add plot with electrodes labeled
     ##
-    #find insertion angle
+     #find insertion angle
     last=len(enum_electrodes)
+    if last>12:
+        enum_electrodes=enum_electrodes[:12]
+        last=len(enum_electrodes)
+    
     #find individual angles between points
     ref = utils.find_insertion_angle(center, enum_electrodes[-1], enum_electrodes[-1])
     print('For ID' + i + 'angles are:')
     print(last, 'New angle: {:.2f}'.format(abs(ref)), 'Total insertion angle: {:.2f}'.format(ref))
     #add up angles for insertion depth
-    output={12:ref}
+    output={last:ref}
     for j in range(len(enum_electrodes)-1):
         angle = (utils.find_insertion_angle(center, enum_electrodes[-j], enum_electrodes[-j+1]))
         ref += abs(angle)
-        number = 11-j
+        number = last-j-1
         print(number, 'New angle: {:.2f}'.format(abs(angle)), 'Total insertion angle: {:.2f}'.format(ref))
         output[number]=ref
 
+    #set the output coordinates for every sample
     #output to excel
-    # Workbook is created 
-    wb = Workbook() 
   
-    # add_sheet is used to create sheet. 
-    sheet1 = wb.add_sheet('ISIP_output') 
+    # Call a Workbook() function of openpyxl  
+    # to create a new blank Workbook object 
+    wb = pyx.load_workbook(filename = 'results_IBMAJA.xlsx')
   
-    #Write output to excel sheet
-    sheet1.write(0, 0, 'Electrode i') 
-    sheet1.write(0, 1, 'Angle theta')
-    for k in range(1,13):
-        sheet1.write(k, 0, ) 
-        sheet1.write(k, 1, output[k]) 
-    wb.save('ISIP_angles.xls')
+    # Get workbook active sheet   
+    # from the active attribute 
+    sheet = wb.active 
+  
+    ID = {"03":[6,2], "04":[6,7], "05":[6,12], "06":[6,17], "07":[6,22], "14":[6,27], "15":[26,2], "17":[26,7], "18":[26,12], "37":[26,17], "38":[26,22], "55":[26,27]}
+  
+      
+    #get location of specific cells
+    center_x_row=ID[i][0]
+    center_x_col=ID[i][1]
+    
+    center_y_row=ID[i][0]
+    center_y_col=ID[i][1]+1
+    
+    top_elec_x_row=ID[i][0]+4
+    top_elec_x_col=ID[i][1]
+    
+    top_elec_y_row=ID[i][0]+4
+    top_elec_y_col=ID[i][1]+1
+    
+    top_angle_row=ID[i][0]+4
+    top_angle_col=ID[i][1]+2
+    
+    #input values to cells
+    sheet.cell(row=center_x_row, column=center_x_col).value=center[0]
+    sheet.cell(row=center_y_row, column=center_y_col).value=center[1]
+
+    
+    for k in range(len(enum_electrodes)):
+        #electrodes='A'+str(k+1)
+        angle=('D'+str(k+9))
+        #sheet[electrodes].value=k
+        sheet.cell(row=top_elec_x_row+k, column=top_elec_x_col).value=enum_electrodes[k][0]
+        sheet.cell(row=top_elec_y_row+k, column=top_elec_y_col).value=enum_electrodes[k][1]
+        sheet.cell(row=top_angle_row+k, column=top_angle_col).value=output[k+1]
+
+
+    wb.save("results_IBMAJA.xlsx")
+  

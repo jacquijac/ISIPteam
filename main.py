@@ -100,14 +100,14 @@ for i in ids:
     #set the output coordinates for every sample
     #output to excel
   
-    # Call a Workbook() function of openpyxl  
-    # to create a new blank Workbook object 
+    # Call a Workbook() function of openpyxl to open result sheet
     wb = pyx.load_workbook(filename = 'results_IBMAJA.xlsx')
   
     # Get workbook active sheet   
     # from the active attribute 
     sheet = wb.active 
   
+    #define starting cell for every ID
     ID = {"03":[6,2], "04":[6,7], "05":[6,12], "06":[6,17], "07":[6,22], "14":[6,27], "15":[26,2], "17":[26,7], "18":[26,12], "37":[26,17], "38":[26,22], "55":[26,27]}
   
       
@@ -140,6 +140,6 @@ for i in ids:
         sheet.cell(row=top_elec_y_row+k, column=top_elec_y_col).value=enum_electrodes[k][1]
         sheet.cell(row=top_angle_row+k, column=top_angle_col).value=output[k+1]
 
-
+    #save in file
     wb.save("results_IBMAJA.xlsx")
   

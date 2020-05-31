@@ -9,7 +9,7 @@ def missing_electrodes(image):
     #input: image
     #output: coordinates of blobs
     im = rgb2gray(image)
-    blobs_log = blob_log(im, max_sigma=30, num_sigma=20, threshold=.03) #optimal values
+    blobs_log = blob_log(im, max_sigma=30, num_sigma=20, threshold=.035) #optimal values
 # Compute radii in the 3rd column.
     blobs_log[:, 2] = blobs_log[:, 2] * sqrt(2)
 

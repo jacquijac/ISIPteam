@@ -11,7 +11,7 @@ import argparse
 import imutils
 from imutils import contours
 import math
-import pdb
+from operator import itemgetter
 
 # import pre and post images
 #post = plt.imread("DATA/ID03/ID03post.png")
@@ -26,8 +26,8 @@ import pdb
 #pre = plt.imread("DATA/ID07/ID07pre.png")
 #post = plt.imread("DATA/ID14/ID14post.png")
 #pre = plt.imread("DATA/ID14/ID14pre.png")
-#post = plt.imread("DATA/ID15/ID15post.png")
-#pre = plt.imread("DATA/ID15/ID15pre.png")
+post = plt.imread("DATA/ID15/ID15post.png")
+pre = plt.imread("DATA/ID15/ID15pre.png")
 #post = plt.imread("DATA/ID17/ID17post.png")
 #pre = plt.imread("DATA/ID17/ID17pre.png")
 #post = plt.imread("DATA/ID18/ID18post.png")
@@ -36,8 +36,8 @@ import pdb
 #pre = plt.imread("DATA/ID37/ID37pre.png")
 #post = plt.imread("DATA/ID38/ID38post.png")
 #pre = plt.imread("DATA/ID38/ID38pre.png")
-post = plt.imread("DATA/ID55/ID55post.png")
-pre = plt.imread("DATA/ID55/ID55pre.png")
+#post = plt.imread("DATA/ID55/ID55post.png")
+#pre = plt.imread("DATA/ID55/ID55pre.png")
 
 def crop_image(img):
     '''
@@ -64,8 +64,10 @@ def find_bright_points(image):
     '''
     Find brightest points in image. Function uses thresholding, based on the 
     mean pixel of an image, to extract the brightest pixels. 
-    input: image 
-    output: mask image showing pixels between determined threshold and 1
+    INPUT: 
+        - image: post-operative image 
+    OUTPUT: 
+        - thresh_img: mask image showing pixels between determined threshold and 1
     '''
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     mean_pixel = np.mean(gray)
@@ -113,6 +115,10 @@ def find_components(mask):
     '''
     Function finds all connected components (white parts of image), then determines which section of the image
     contains the most components. The components that are not in this section are blacked out. 
+    INPUT:
+        - mask: mask image containing brightest points
+    OUTPUT:
+        - comp_img: image containing only components around spiral center
     '''
     #create empty list to store number of components in each section
     num_comps = list()
@@ -134,13 +140,12 @@ def find_components(mask):
     mask_img[:, 0:most_comps] = 0
     mask_img[:, (most_comps)+400:] = 0
 
-
     #now get stats for only this section  
     nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(mask_img, connectivity=8)
     sizes = stats[1:, -1]; nb_components = nb_components - 1
 
     #we only want to keep the smallest components since they tend to form a circle around the spiral center
-    #take maximum size to be (4/3)*mean(size)
+    #also want to get rid of really small components, since they are likely just noise 
     min_size = np.mean(sizes)*0.2
     max_size = np.mean(sizes)*1.33
 
@@ -232,34 +237,40 @@ def dist_between_points(x1, y1, x2, y2):
     dist = np.sqrt((x2-x1)**2 + (y2-y1)**2)
     return dist
 
-def spiral_direction(cnt_coords, center):
+def spiral_direction(thresh_img, center):
     '''
     Determine the direction of the spiral. If tail goes right, direction is right 
     and if tail goes left, direction is left. 
     INPUTS:
-        - cnt_coords: list of coordinates of contours
+        - thresh_img: mask image containing all connected components 
         - center: coordinates of spiral center
     OUTPUT:
         - spiral_dir: string indicating "right" or "left" direction 
-        - bottom_right: coordinates of bottom right electrode
-        - bottom_left: coordinates of bottom left electrode
     '''
+    # find coordinates of centroids of connected components and sort them from highest to lowest y value
+    thresh_img = np.uint8(thresh_img)
+    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(thresh_img, connectivity=8)
+    cnt_coords = centroids[1:]
+    cnt_coords = sorted(centroids, key=itemgetter(1), reverse = True)
     # get coordinates of 4 lowest electrodes 
-    # Note: coords in cnt_coords are ordered from bottom to top so bottom 4 are first 4 in list
+    # Note: coords are sorted from bottom to top so bottom 4 are first 4 in list
     lowest = cnt_coords[0:4]
     # Find rightmost and leftmost coordinate of the 4 lowest
     bottom_right = cnt_coords[np.argmax([lowest[i][0] for i in range(len(lowest))])]
+    bottom_right = (bottom_right[0], bottom_right[1])
     bottom_left = cnt_coords[np.argmin([lowest[i][0] for i in range(len(lowest))])]
+    bottom_left = (bottom_left[0], bottom_left[1])
     # calculate distance from bottom right and bottom left coordinate to the center
     center_to_right = dist_between_points(bottom_right[0], bottom_right[1], center[0], center[1]) 
     center_to_left = dist_between_points(bottom_left[0], bottom_left[1], center[0], center[1]) 
+    center_to_lowest = dist_between_points(lowest[0][0], lowest[0][1], center[0], center[1]) 
     # the one furthest from the center will determine the spiral direction
     if center_to_right > center_to_left:
         spiral_dir = 'right'
     else: 
         spiral_dir = 'left'
     
-    return spiral_dir, bottom_right, bottom_left
+    return spiral_dir
 
 def get_next_elec(cnt_coords, elec_coords, direction, median_dist):
     '''
@@ -298,7 +309,8 @@ def get_next_elec(cnt_coords, elec_coords, direction, median_dist):
 
     return cnt_coords, elec_coords
 
-def enumerate_electrodes(cnt_coords, center):
+
+def enumerate_electrodes(cnt_coords, center, thresh_img):
     '''
     Enumerate electrodes by looking for next electrode in a spiral-like shape. 
     (i.e. if spiral direction is right, first look
@@ -310,7 +322,10 @@ def enumerate_electrodes(cnt_coords, center):
         - elec_coords: list of electrode coordinates, ordered from spiral tail to spiral center
     '''
     # determine spiral direction and bottom right and left electrodes
-    spiral_dir, bottom_right, bottom_left = spiral_direction(cnt_coords, center)
+    spiral_dir = spiral_direction(thresh_img, center)
+    lowest = cnt_coords[0:4]
+    bottom_right = cnt_coords[np.argmax([lowest[i][0] for i in range(len(lowest))])]
+    bottom_left = cnt_coords[np.argmin([lowest[i][0] for i in range(len(lowest))])]
     # initialize list to store ordered electrode coordinates
     elec_coords = []
     # initialize array to store distances between electrodes 
@@ -416,7 +431,7 @@ plt.plot(x_center, y_center, 'r.', markersize=14)
 thresh_img_spiral = select_spiral(thresh_img, center)
 elec, cnts = find_electrodes(post_norm, thresh_img_spiral, center)
 
-elec_nums = enumerate_electrodes(cnts, center)
+elec_nums = enumerate_electrodes(cnts, center, thresh_img)
 
 for i in range(len(elec_nums)):
     cv2.putText(post_norm, str(i), (int(elec_nums[i][0]), int(elec_nums[i][1])), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,225), 3)             

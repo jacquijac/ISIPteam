@@ -63,6 +63,24 @@ for i in ids:
     post_norm = utils.normalize(post_crop)
     
     #find spiral center
+    thresh_img = utils.find_bright_points(post_norm)
+    comp_img = utils.find_components(thresh_img)
+    x_center, y_center = utils.find_center(comp_img)
+    center = np.array([x_center, y_center])
+    plt.plot(x_center, y_center, 'r.', markersize=14)
+
+    thresh_img_spiral = utils.select_spiral(thresh_img, center)
+    elec, cnts = utils.find_electrodes(post_norm, thresh_img_spiral, center)
+
+    elec_nums = utils.enumerate_electrodes(cnts, center, thresh_img)
+
+    for i in range(len(elec_nums)):
+        cv2.putText(post_norm, str(i), (int(elec_nums[i][0]), int(elec_nums[i][1])), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,225), 3)             
+    plt.imshow(post_norm)
+    plt.show()
+    
+    
+    
     mask = utils.find_bright_points(post_norm)
     comp_img = utils.find_components(mask)
     x_center, y_center = utils.find_center(comp_img)

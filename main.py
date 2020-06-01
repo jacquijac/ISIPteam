@@ -4,12 +4,17 @@ import numpy as np
 import cv2
 import utils
 import openpyxl as pyx
+import collections
+
 
 
 #### Loop to input files ####
 
 #create list of id numbers of all pictures
 ids = ["03", "04", "05", "06", "07", "14", "15", "17", "18", "37", "38", "55"]
+
+#define dict to collect insertion depth for every electroc
+angles=collections.defaultdict(list)
 
 #loop over all id numbers
 for i in ids:
@@ -53,6 +58,8 @@ for i in ids:
     ref = utils.find_insertion_angle(center, enum_electrodes[-1], enum_electrodes[-1])
     print('For ID' + str(i) + ' angles are:')
     print(last, 'New angle: {:.2f}'.format(abs(ref)), 'Total insertion angle: {:.2f}'.format(ref))
+    #add angles to histogram dict
+    angles[last].append(ref)
     
     #add up angles for insertion depth
     output={last:ref}
@@ -62,6 +69,11 @@ for i in ids:
         number = last-j-1
         print(number, 'New angle: {:.2f}'.format(abs(angle)), 'Total insertion angle: {:.2f}'.format(ref))
         output[number]=ref
+        #add angles to histogram dict
+        angles[number].append(ref)
+
+ 
+
 
     #set the output coordinates and angles for every sample to print to outputsheet
   
@@ -97,8 +109,6 @@ for i in ids:
 
     
     for k in range(len(enum_electrodes)):
-        #electrodes='A'+str(k+1)
-        angle=('D'+str(k+9))
         #sheet[electrodes].value=k
         sheet.cell(row=top_elec_x_row+k, column=top_elec_x_col).value=enum_electrodes[k][0]
         sheet.cell(row=top_elec_y_row+k, column=top_elec_y_col).value=enum_electrodes[k][1]
@@ -106,3 +116,17 @@ for i in ids:
 
     #save in file
     wb.save("results_IBMAJA.xlsx")
+
+means={}
+for o in range(1,13):
+    mean=(np.mean(angles[o]))
+    means[o]=mean
+
+print(means)
+
+tick=(1,2,3,4,5,6,7,8,9,10,11,12)   
+plt.title('Barplot of the mean insertion angle of each electrode')
+plt.xlabel('Electrode number')
+plt.ylabel('Insertion angle') 
+plt.bar(list(means.keys()), means.values(), color='b', tick_label=tick)
+plt.show()

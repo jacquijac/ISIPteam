@@ -63,10 +63,10 @@ for i in ids:
     
     #add up angles for insertion depth
     output={last:ref}
-    for j in range(len(enum_electrodes)-1):
+    for j in range(len(1,enum_electrodes)):
         angle = (utils.find_insertion_angle(center, enum_electrodes[-j], enum_electrodes[-j+1]))
         ref += abs(angle)
-        number = last-j-1
+        number = last-j
         print(number, 'New angle: {:.2f}'.format(abs(angle)), 'Total insertion angle: {:.2f}'.format(ref))
         output[number]=ref
         #add angles to histogram dict

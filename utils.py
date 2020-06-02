@@ -1,19 +1,10 @@
 
-
-
 import sys
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
-import skimage
-from skimage import feature, color, filters, draw, measure
-from scipy import ndimage, spatial
-from PIL import Image
+from skimage import  measure
+from scipy import spatial
 import cv2
-import argparse
 import imutils
-from imutils import contours
-import math
 from operator import itemgetter
 
 
@@ -423,7 +414,6 @@ def fit_line_slope(points):
 
 def find_insertion_angle(center, last_electrode, other_electrode):
     """
-
     Calculate insertion angle when center and two electrodes are given
     INPUT
     
@@ -439,19 +429,15 @@ def find_insertion_angle(center, last_electrode, other_electrode):
 
 def calculateDistance(point1, point2):
     """
-
     Parameters
     ----------
     point1 : tuple of coordinates of point
     point2 : tuple of coordinates of point
     .
-
     Returns
     -------
     dist : integer of euclidean distance between points
-
     """
     dist = np.sqrt((point1[1] - point2[1])**2 + (point1[0] - point2[0])**2)
     return dist
-    
 

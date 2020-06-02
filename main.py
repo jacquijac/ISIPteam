@@ -63,7 +63,7 @@ for i in ids:
     
     #add up angles for insertion depth
     output={last:ref}
-    for j in range(len(1,enum_electrodes)):
+    for j in range(1,len(enum_electrodes)):
         angle = (utils.find_insertion_angle(center, enum_electrodes[-j], enum_electrodes[-j+1]))
         ref += abs(angle)
         number = last-j
@@ -78,7 +78,7 @@ for i in ids:
     #set the output coordinates and angles for every sample to print to outputsheet
   
     # Call a Workbook() function of openpyxl to open ore nade result sheet
-    wb = pyx.load_workbook(filename = 'results_IBMAJA.xlsx')
+    wb = pyx.load_workbook(filename = 'results_abw.xlsx')
   
     # Get workbook active sheet   
     sheet = wb.active 
@@ -115,7 +115,7 @@ for i in ids:
         sheet.cell(row=top_angle_row+k, column=top_angle_col).value=output[k+1]
 
     #save in file
-    wb.save("results_IBMAJA.xlsx")
+    wb.save("results_abw.xlsx")
 
 means={}
 for o in range(1,13):
